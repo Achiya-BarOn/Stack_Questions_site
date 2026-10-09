@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>יצירת מבדק STACK</title>
+<link rel="stylesheet" href="app.css">
+<script src="site-lib/jszip.min.js"></script>
+<script src="site-lib/Sortable.min.js"></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <h1>מאגר שאלות STACK – יצירת מבדק</h1>
+  <span class="built" id="built"></span>
+  <a class="toplink" href="review.html">עיון בהגשות ←</a>
+</header>
+
+<div class="layout">
+  <!-- Question bank -->
+  <section class="bank" aria-labelledby="bank-title">
+    <h2 id="bank-title">שאלות</h2>
+    <div class="filters">
+      <input type="search" id="search" placeholder="🔍 חיפוש לפי שם, טקסט או מספר שאלה">
+      <label class="check"><input type="checkbox" id="readyonly" checked> רק שאלות מוכנות</label>
+    </div>
+    <div class="bankgrid">
+      <nav class="treepane" aria-label="קטגוריות">
+        <div class="panehead">
+          <span>קטגוריות</span>
+          <button type="button" class="btn small" id="collapse-all" title="סגירת כל הקטגוריות">− סגירת הכול</button>
+        </div>
+        <div id="tree"></div>
+      </nav>
+      <section class="listpane" aria-live="polite">
+        <div class="panehead">
+          <span id="scope"></span>
+          <label class="check"><input type="checkbox" id="subcats"> כולל תתי-קטגוריות</label>
+        </div>
+        <div class="listtools">
+          <label class="check" title="סימון כל השאלות המוכנות שברשימה"><input type="checkbox" id="b-pickall"> סימון הכול</label>
+          <span class="count" id="count"></span>
+        </div>
+        <div class="selbar" id="b-selbar" hidden>
+          <span id="b-selcount"></span>
+          <button type="button" class="btn small primary" id="b-sel-add">הוספה למבדק</button>
+          <button type="button" class="btn small ghost" id="b-sel-clear">ביטול הבחירה</button>
+        </div>
+        <div id="results"></div>
+        <p class="hint">אפשר גם לגרור שאלה לאזור "המבדק שלי", למקום הרצוי בין השאלות. גרירה של שאלה מסומנת מוסיפה את כל המסומנות.</p>
+      </section>
+    </div>
+  </section>
+
+  <!-- Quiz being built -->
+  <aside class="quiz" aria-labelledby="quiz-title">
+    <h2 id="quiz-title">המבדק שלי</h2>
+    <p class="editing" id="editing"></p>
+    <div class="titlerow">
+      <label class="field grow">שם המבדק <input type="text" id="q-title" placeholder="למשל: תרגול – אינטגרלים כפולים"></label>
+      <label class="field folderfield">תיקייה
+        <input type="search" id="q-folder" list="folder-options" placeholder="ללא תיקייה – הקלידו לחיפוש" autocomplete="off">
+        <datalist id="folder-options"></datalist>
+      </label>
+    </div>
+    <p class="folderhint" id="folderhint" hidden></p>
+    <p class="namewarn" id="namewarn" hidden></p>
+    <div class="selbar" id="q-selbar" hidden>
+      <span id="q-selcount"></span>
+      <button type="button" class="btn small" id="q-sel-remove">הסרת המסומנות</button>
+      <button type="button" class="btn small ghost" id="q-sel-clear">ביטול הבחירה</button>
+    </div>
+    <ol id="selected" class="selected"></ol>
+    <p class="empty" id="selected-empty">עדיין לא נבחרו שאלות. השתמשו ב"הוספה למבדק".</p>
+    <p class="hint" id="drag-hint">גררו שאלה או כותרת עמוד כדי לשנות את הסדר. כדי לגרור כמה שאלות יחד, סמנו אותן (☐ או Ctrl+לחיצה) וגררו אחת מהן. שינוי התנהגות, ⧉ או ✕ בשאלה מסומנת חלים על כל המסומנות. "+ עמוד חדש כאן" מוסיף מעבר עמוד, ✕ ליד כותרת עמוד מבטל אותו. ⧉ מוסיף עותק של השאלה עם גרסה אחרת.</p>
+
+    <details class="settings" id="settings">
+      <summary>הגדרות המבדק</summary>
+      <label class="field">ציון מרבי <input type="number" id="q-grade" min="1" step="1" value="10"></label>
+      <label class="field">התנהגות השאלות
+        <select id="q-behaviour"></select>
+      </label>
+      <div class="field">שאלות בכל עמוד
+        <div class="inline"><input type="number" id="q-perpage" min="0" step="1" value="10">
+          <button type="button" class="btn small" id="repaginate">חלוקה מחדש לעמודים</button></div>
+        <small>שאלה חדשה נכנסת לעמוד האחרון, ועמוד חדש נפתח כשהוא מלא. "חלוקה מחדש" מסדרת את כל המבדק מחדש. 0 = הכול בעמוד אחד.</small>
+      </div>
+      <fieldset>
+        <legend>מה הסטודנט רואה אחרי "בדיקה" (במהלך הניסיון)</legend>
+        <div id="review-during" class="checks"></div>
+      </fieldset>
+      <fieldset>
+        <legend>מה הסטודנט רואה אחרי הגשת המבדק</legend>
+        <div id="review-after" class="checks"></div>
+      </fieldset>
+    </details>
+
+    <div class="actions">
+      <button type="button" class="btn primary" id="make-zip">יצירת מבדק (ZIP)</button>
+      <button type="button" class="btn" id="save">שמירה</button>
+      <button type="button" class="btn" id="save-copy" hidden>שמירה כעותק חדש</button>
+      <button type="button" class="btn" id="share">קישור לשיתוף</button>
+      <button type="button" class="btn ghost" id="new">מבדק חדש</button>
+    </div>
+    <p class="status" id="status" role="status"></p>
+
+    <div class="moodle-help" id="moodle-help" hidden>
+      <h3>העלאה ל-Moodle</h3>
+      <ol>
+        <li>בקורס: הוספת פעילות ← <b>חבילת SCORM</b>, ובחירת קובץ ה-ZIP.</li>
+        <li><b>ציון מרבי</b>: <span id="help-grade">10</span>. <b>שיטת ציון</b>: הציון הגבוה ביותר.</li>
+        <li><b>כפיית ניסיון חדש</b>: "כאשר הניסיון הקודם הושלם" (כך כל כניסה אחרי הגשה מגרילה גרסאות חדשות).</li>
+        <li><b>תצוגה</b>: בחלון הנוכחי. <b>דילוג על דף מבנה התוכן</b>: תמיד.</li>
+      </ol>
+    </div>
+
+    <h2 class="saved-title">מבדקים שמורים</h2>
+    <p class="hint">נשמרים בדפדפן הזה בלבד. כדי להעביר מבדק למחשב אחר או למרצה אחר, השתמשו ב"קישור לשיתוף".</p>
+    <div class="savedbar">
+      <input type="search" id="saved-search" placeholder="חיפוש במבדקים השמורים (שם, תיקייה או שאלה)">
+      <button type="button" class="btn small" id="new-folder">📁 תיקייה חדשה</button>
+    </div>
+    <div class="selbar" id="s-selbar" hidden>
+      <span id="s-selcount"></span>
+      <input type="search" id="s-sel-move" class="moveto" list="folder-options" autocomplete="off"
+        placeholder="העברה לתיקייה – הקלידו לחיפוש" aria-label="העברה לתיקייה">
+      <button type="button" class="btn small" id="s-sel-move-go">העברה</button>
+      <button type="button" class="btn small" id="s-sel-delete">מחיקת המסומנים</button>
+      <button type="button" class="btn small ghost" id="s-sel-clear">ביטול הבחירה</button>
+    </div>
+    <div id="saved" class="saved"></div>
+    <p class="hint" id="saved-hint" hidden>גררו מבדק (⠿) אל כותרת של תיקייה כדי להעביר אותו אליה, או למקום אחר ברשימה. כדי לגרור כמה יחד, סמנו אותם (☐ או Ctrl+לחיצה). פעולה על מבדק מסומן (העברה, מחיקה) חלה על כל המסומנים.</p>
+    <p class="empty" id="saved-empty">אין מבדקים שמורים.</p>
+  </aside>
+</div>
+
+<!-- Preview -->
+<dialog id="preview">
+  <div class="dialog-head">
+    <h3 id="preview-title"></h3>
+    <span id="preview-variant"></span>
+    <button type="button" class="btn" id="preview-other">גרסה אחרת</button>
+    <button type="button" class="btn primary" id="preview-add">הוספה למבדק</button>
+    <button type="button" class="btn ghost" id="preview-close" aria-label="סגירה">✕</button>
+  </div>
+  <iframe id="preview-frame" title="תצוגה מקדימה"></iframe>
+</dialog>
+</body>
+</html>

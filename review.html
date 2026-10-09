@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>עיון בהגשות – מבדקי STACK</title>
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="review.css">
+<script src="site-lib/xlsx.full.min.js"></script>
+<script src="review.js" defer></script>
+</head>
+<body>
+<header class="topbar">
+  <h1>עיון בהגשות</h1>
+  <a class="toplink" href="index.html">יצירת מבדק ←</a>
+</header>
+
+<main class="rv">
+  <section class="panel" id="load">
+    <h2>טעינת הדוח מ-Moodle</h2>
+    <ol class="steps">
+      <li>במשאב ה-SCORM ב-Moodle: <b>דוחות</b> ← <b>דוח תת־פעילויות בלומדה</b>.</li>
+      <li>בהגדרות שמתחת לטבלה, סמנו את <b>תקציר השאלה</b> (Summary of question) ואת <b>תקציר התגובות</b> (Summary of responses), ולחצו על "הצגת הדוח". אפשר לסמן גם את <b>תקציר התוצאה</b>, כדי לראות את הציון המקורי של כל הגשה. Moodle זוכר את הבחירה לפעם הבאה.</li>
+      <li>בתחתית הדוח: הורדה כקובץ (Excel, ‏ODS או טקסט).</li>
+      <li>גררו את הקובץ לכאן.</li>
+    </ol>
+    <div class="drop" id="drop">
+      <p>גררו לכאן את קובץ הדוח</p>
+      <label class="btn primary">בחירת קובץ<input type="file" id="file" accept=".xlsx,.xls,.ods,.csv,.txt" hidden></label>
+    </div>
+    <p class="privacy">🔒 הקובץ נקרא רק בדפדפן שלכם, ושום מידע ממנו (שמות, תשובות, ציונים) לא נשלח לשום מקום. שינויי ציון ידניים נשמרים בדפדפן הזה בלבד.</p>
+    <p class="status" id="status" role="status"></p>
+  </section>
+
+  <section class="panel" id="overview" hidden>
+    <h2>סיכום</h2>
+    <div class="stats" id="stats"></div>
+    <div class="notice" id="notices"></div>
+    <h3>לפי שאלה</h3>
+    <div class="tablewrap"><table class="grid" id="byquestion"></table></div>
+  </section>
+
+  <section class="panel" id="attempts" hidden>
+    <div class="headrow">
+      <h2>ניסיונות</h2>
+      <input type="search" id="filter" placeholder="🔍 סינון לפי שם או מזהה">
+    </div>
+    <p class="hint">לחיצה על שורה פותחת את ההגשה: כל התשובות והניסיונות, המשוב, ושינוי ציון ידני.</p>
+    <div class="tablewrap"><table class="grid clickable" id="attemptlist"></table></div>
+  </section>
+
+  <section class="panel" id="export" hidden>
+    <h2>ייצוא ציונים ל-Moodle</h2>
+    <p>קובץ CSV עם ציון אחד לכל סטודנט, כולל הבדיקה מחדש והשינויים הידניים.</p>
+    <div class="exportrow">
+      <label class="field">ציון הסטודנט לפי
+        <select id="method">
+          <option value="highest">הניסיון הגבוה ביותר</option>
+          <option value="last">הניסיון האחרון</option>
+          <option value="first">הניסיון הראשון</option>
+          <option value="average">ממוצע הניסיונות</option>
+        </select>
+      </label>
+      <button type="button" class="btn primary" id="download">הורדת קובץ ציונים</button>
+    </div>
+    <details class="howto">
+      <summary>איך מייבאים את הקובץ ל-Moodle?</summary>
+      <ol>
+        <li>בקורס: <b>ציונים</b> ← <b>ייבוא</b> ← <b>קובץ CSV</b>. בחרו את הקובץ, קידוד UTF-8, מפריד: פסיק.</li>
+        <li>בשדה "זיהוי משתמש": מיפוי מהעמודה של כתובת הדוא"ל (או מספר הזהות) אל השדה המתאים ב-Moodle.</li>
+        <li>בשדה "מיפוי פריטי ציון": את העמודה "ציון" לפריט הציון של משאב ה-SCORM, ולחצו על "העלאת ציונים".</li>
+      </ol>
+      <p>ציון שמיובא כך מסומן ב-Moodle כ"נדרס" (overridden), ולכן ניסיונות חדשים במשאב לא ישנו אותו. אם סטודנטים עוד עובדים על המבדק, אפשר במקום זה לייבא לפריט ציון חדש.</p>
+    </details>
+  </section>
+</main>
+
+<dialog id="detail" class="detail">
+  <div class="detailhead">
+    <div>
+      <h2 id="d-title"></h2>
+      <p class="meta" id="d-meta"></p>
+    </div>
+    <button type="button" class="btn ghost" id="d-close">סגירה ✕</button>
+  </div>
+  <div id="d-questions"></div>
+  <h3>ההגשה כפי שהסטודנט רואה אותה בסקירה</h3>
+  <p class="hint" id="d-framehint">התשובות האחרונות של הסטודנט, עם המשוב והתשובות הנכונות.</p>
+  <iframe id="d-frame" title="ההגשה"></iframe>
+</dialog>
+</body>
+</html>

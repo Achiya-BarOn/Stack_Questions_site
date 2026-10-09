@@ -1,0 +1,87 @@
+/* Approximates Moodle's Boost theme quiz layout, so questions look as they do in Moodle. */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px; line-height: 1.5; color: #1d2125; background: #fff;
+  margin: 0; padding: 16px;
+}
+h1 { font-size: 1.6rem; font-weight: 700; margin: 0 0 1rem; }
+#previewbar { background: #fff3cd; border: 1px solid #ffe69c; padding: 6px 12px; margin-bottom: 12px; border-radius: 4px; }
+#summary { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 12px 16px; margin-bottom: 1rem; }
+#summary .grade { font-weight: 700; }
+
+.que { display: flex; gap: 1rem; margin-bottom: 1.8rem; align-items: flex-start; }
+.que .info {
+  flex: 0 0 7.5em; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 2px;
+  padding: 0.5em; font-size: 0.85rem;
+}
+.que .info h3 { font-size: 1rem; margin: 0 0 .3em; font-weight: 400; }
+.que .info .qno { font-weight: 700; font-size: 1.1rem; }
+.que .info .state, .que .info .grade, .que .info .seed { margin: .2em 0; }
+.que .info .seed { color: #6a737b; text-align: right; }
+.que .content { flex: 1 1 auto; min-width: 0; }
+.que .formulation { background: #e7f3f5; color: #001a1e; border-radius: 2px; padding: 1em; }
+.que .outcome { background: #fcefdc; color: #273a3a; border-radius: 2px; padding: 1em; margin-top: .5em; }
+.que .outcome:empty, .que .outcome [hidden] { display: none; }
+@media (max-width: 700px) { .que { flex-direction: column; } .que .info { flex: none; width: 100%; box-sizing: border-box; } }
+
+.que input.algebraic {
+  font-family: inherit; font-size: 1rem; padding: .3rem .5rem; border: 1px solid #8f959e;
+  border-radius: .5rem; background: #fff; max-width: 100%; box-sizing: border-box;
+}
+.que .matrixinput { display: inline-flex; vertical-align: middle; align-items: stretch; direction: ltr; margin: .2em; }
+.que .matrixcells { display: inline-grid; gap: 3px; padding: 2px 3px; }
+.que .matrixbracket { width: 5px; border: 2px solid #1d2125; }
+.que .matrixbracket.left { border-right: 0; }
+.que .matrixbracket.right { border-left: 0; }
+.que input.matrixcell {
+  width: 5em; font-family: inherit; font-size: 1rem; padding: .2rem .4rem; text-align: center;
+  border: 1px solid #8f959e; border-radius: .3rem; box-sizing: border-box;
+}
+.que .matrixinput.invalid input.matrixcell { border-color: #ca3120; }
+.que input.algebraic.invalid { border-color: #ca3120; }
+.que input[readonly] { background: #f2f2f2; }
+.stackinputfeedback { display: block; }
+.stackinputfeedback.standard { border: 1px solid #ccc; background: #fff; border-radius: 4px; padding: .3em .6em; margin-top: .3em; text-align: initial; }
+.stackinputfeedback.compact { display: inline-block; padding: 0 .3em; }
+.stackinputfeedback p { margin: .2em 0; }
+.stackinputerror { color: #ca3120; }
+.stackprtfeedback:empty { display: none; }
+
+.correct { color: #357a32; }
+.partially, .partiallycorrect .state { color: #f0ad4e; }
+.incorrect { color: #ca3120; }
+.que.correct .info .state { color: #357a32; font-weight: 700; }
+.que.incorrect .info .state { color: #ca3120; font-weight: 700; }
+.que.partiallycorrect .info .state { color: #b06d00; font-weight: 700; }
+
+.stack-jsxgraph { max-width: 100%; margin: .5em 0; }
+.stack_plot img { max-width: 100%; height: auto; }
+.submitbtns { margin-top: 1rem; display: flex; gap: .5rem; }
+.btn-secondary { background: #ced4da; color: #1d2125; }
+.btn-secondary:hover { background: #b8bfc6; }
+
+/* Quiz navigation, like Moodle's "Quiz navigation" block */
+#quiznav { border: 1px solid #dee2e6; border-radius: 4px; padding: .6rem .8rem; margin-bottom: 1rem; background: #fff;
+  position: sticky; top: 0; z-index: 10; max-height: 40vh; overflow-y: auto; box-shadow: 0 2px 4px rgba(0,0,0,.06); }
+.que { scroll-margin-top: var(--navh, 0px); }
+#quiznav h3 { font-size: 1rem; margin: 0 0 .5rem; }
+#quiznav .navpages { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .5rem; }
+#quiznav .navpage { border: 1px solid #dee2e6; border-radius: 4px; padding: .3rem .5rem .45rem; }
+#quiznav .navpage.current { border-color: #0f6cbf; background: #f0f6fc; }
+#quiznav .pagelink { display: block; background: none; border: 0; padding: 0 0 .3rem; font-size: .8rem; color: #0f6cbf; cursor: pointer; }
+#quiznav .navpage.current .pagelink { font-weight: 700; color: #1d2125; }
+#quiznav .qnbuttons { display: flex; flex-wrap: wrap; gap: 6px; }
+#quiznav .qnbutton {
+  width: 2.2em; height: 2.6em; border: 1px solid #8f959e; border-radius: 3px; background: #fff;
+  font-size: .9rem; cursor: pointer; position: relative; padding: 0;
+  background-image: linear-gradient(to bottom, transparent 70%, #fff 70%);
+}
+#quiznav .qnbutton.answered { background-image: linear-gradient(to bottom, transparent 70%, #8f959e 70%); }
+#quiznav .qnbutton.correct { background-image: linear-gradient(to bottom, transparent 70%, #357a32 70%); }
+#quiznav .qnbutton.partiallycorrect { background-image: linear-gradient(to bottom, transparent 70%, #f0ad4e 70%); }
+#quiznav .qnbutton.incorrect { background-image: linear-gradient(to bottom, transparent 70%, #ca3120 70%); }
+#quiznav .qnbutton.thispage { border-width: 2px; border-color: #0f6cbf; font-weight: 700; }
+#quiznav .finishlink { background: none; border: 0; color: #0f6cbf; cursor: pointer; padding: 0; font-size: .9rem; }
+.btn { background: #0f6cbf; color: #fff; border: 0; border-radius: .5rem; padding: .45rem 1rem; font-size: 1rem; cursor: pointer; }
+.btn:hover { background: #0c589c; }
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; }

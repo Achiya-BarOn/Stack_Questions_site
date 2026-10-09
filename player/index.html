@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STACK</title>
+<link rel="stylesheet" href="lib/jsxgraph/jsxgraph.css">
+<link rel="stylesheet" href="player/player.css">
+<script>
+  // Same delimiters as Moodle's MathJax filter.
+  window.MathJax = {
+    // textmacros is off as in Moodle's MathJax 2, where "\\text{unit_step(x)}" shows literally.
+    tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"], ["$$", "$$"]], processEscapes: false,
+           packages: { "[-]": ["textmacros"] } },
+    options: { ignoreHtmlClass: "tex2jax_ignore" },
+    startup: { typeset: false },
+    chtml: { fontURL: "lib/mathjax/output/chtml/fonts/woff-v2" },
+  };
+</script>
+<script src="lib/mathjax/tex-chtml-full.js"></script>
+<script src="lib/jsxgraph/jsxgraphcore.js"></script>
+<script src="player/maxima.js"></script>
+<script src="player/peval.js"></script>
+<script src="player/engine.js"></script>
+<script src="player/scorm.js"></script>
+<script src="quiz.js"></script>
+<script src="player/player.js"></script>
+</head>
+<body>
+  <div id="previewbar" hidden><span></span> <button type="button"></button></div>
+  <h1 id="title"></h1>
+  <div id="summary" hidden></div>
+  <nav id="quiznav" hidden></nav>
+  <main id="quiz">טוען...</main>
+  <div class="submitbtns">
+    <button type="button" id="prevpage" class="btn btn-secondary" hidden></button>
+    <button type="button" id="nextpage" class="btn" hidden></button>
+    <button type="button" id="finish" class="btn" hidden></button>
+  </div>
+</body>
+</html>

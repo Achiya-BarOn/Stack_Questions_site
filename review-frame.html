@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>עיון בהגשה</title>
+<!-- The player in review mode, for the submissions review page (review.js).  The page
+     that opens this frame gives it the quiz: parent.reviewJobs[?job=<name>] is either
+     {replay} (an attempt to show) or {batch} (attempts to regrade, without display). -->
+<link rel="stylesheet" href="lib/jsxgraph/jsxgraph.css">
+<link rel="stylesheet" href="player/player.css">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"], ["$$", "$$"]], processEscapes: false,
+           packages: { "[-]": ["textmacros"] } },
+    options: { ignoreHtmlClass: "tex2jax_ignore" },
+    startup: { typeset: false },
+    chtml: { fontURL: "lib/mathjax/output/chtml/fonts/woff-v2" },
+  };
+</script>
+<script src="player/maxima.js"></script>
+<script src="player/peval.js"></script>
+<script src="player/engine.js"></script>
+<script src="player/scorm.js"></script>
+<style>#title { display: none; } body { padding: 12px; } #summary { display: none !important; }</style>
+</head>
+<body>
+  <div id="previewbar" hidden><span></span> <button type="button"></button></div>
+  <h1 id="title"></h1>
+  <div id="summary" hidden></div>
+  <nav id="quiznav" hidden></nav>
+  <main id="quiz">טוען...</main>
+  <div class="submitbtns">
+    <button type="button" id="prevpage" class="btn btn-secondary" hidden></button>
+    <button type="button" id="nextpage" class="btn" hidden></button>
+    <button type="button" id="finish" class="btn" hidden></button>
+  </div>
+<script>
+(() => {
+  const load = (src) => new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = () => reject(new Error(src));
+    document.head.appendChild(s);
+  });
+  window.STACK_QUIZ = parent.reviewJobs[new URLSearchParams(location.search).get("job")];
+  // Regrading needs no display: MathJax and JSXGraph only for an attempt that is shown.
+  const libs = STACK_QUIZ.batch ? Promise.resolve()
+    : Promise.all([load("lib/mathjax/tex-chtml-full.js"), load("lib/jsxgraph/jsxgraphcore.js")]);
+  libs.then(() => window.MathJax.startup && MathJax.startup.promise).then(() => load("player/player.js"));
+})();
+</script>
+</body>
+</html>

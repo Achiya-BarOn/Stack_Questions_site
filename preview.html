@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>תצוגה מקדימה</title>
+<!-- One question in the real player: preview.html?q=<id>&v=<variant>&b=<behaviour> -->
+<link rel="stylesheet" href="lib/jsxgraph/jsxgraph.css">
+<link rel="stylesheet" href="player/player.css">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [["\\(", "\\)"]], displayMath: [["\\[", "\\]"], ["$$", "$$"]], processEscapes: false,
+           packages: { "[-]": ["textmacros"] } },
+    options: { ignoreHtmlClass: "tex2jax_ignore" },
+    startup: { typeset: false },
+    chtml: { fontURL: "lib/mathjax/output/chtml/fonts/woff-v2" },
+  };
+</script>
+<script src="lib/mathjax/tex-chtml-full.js"></script>
+<script src="lib/jsxgraph/jsxgraphcore.js"></script>
+<script src="player/maxima.js"></script>
+<script src="player/peval.js"></script>
+<script src="player/engine.js"></script>
+<script src="player/scorm.js"></script>
+<style>#title { display: none; } body { padding: 12px; }</style>
+</head>
+<body>
+  <div id="previewbar" hidden><span></span> <button type="button"></button></div>
+  <h1 id="title"></h1>
+  <div id="summary" hidden></div>
+  <nav id="quiznav" hidden></nav>
+  <main id="quiz">טוען...</main>
+  <div class="submitbtns">
+    <button type="button" id="prevpage" class="btn btn-secondary" hidden></button>
+    <button type="button" id="nextpage" class="btn" hidden></button>
+    <button type="button" id="finish" class="btn" hidden></button>
+  </div>
+<script>
+(async () => {
+  const p = new URLSearchParams(location.search);
+  const t = await (await fetch(`data/${encodeURIComponent(p.get("q"))}/question.json`)).json();
+  const v = Math.min(+p.get("v") || 1 + Math.floor(Math.random() * t.nvariants), t.nvariants);
+  const all = { attempt: true, correctness: true, marks: true, specificfeedback: true, generalfeedback: true, rightanswer: true };
+  window.STACK_QUIZ = {
+    title: t.name, behaviour: p.get("b") || "adaptivenopenalty", grade: t.defaultgrade, sumgrades: t.defaultgrade,
+    pages: 1, decimalpoints: 2, review: { during: all, after: all },
+    showseed: true, ephemeral: true, variants: [v],
+    questions: [Object.assign({}, t, { page: 1 })],
+  };
+  // Tell the website which variant is shown.
+  parent.postMessage({ type: "stack-preview", q: t.id, v, n: t.nvariants }, "*");
+  const s = document.createElement("script");
+  s.src = "player/player.js";
+  document.body.appendChild(s);
+})();
+</script>
+</body>
+</html>
