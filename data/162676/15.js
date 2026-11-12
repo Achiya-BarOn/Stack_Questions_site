@@ -1,0 +1,1 @@
+STACK_VARIANT("162676",15,"4equGis78hjvtr95Qq8qynhRtbv+HDs+wn2KAC7xqHvnIkYO43Wzrp/8t/H+decoQw98/+nzeXoOF6WSgIzQLp7qr2czowHmXHkV7hWHnwdKMKl7C2UcfJ/9oFJhOnVFg8EsJn0t94OszVYPXL6O4nnrQvaRKbYAV+KTznEwnm0ODMsifiAeNOncbA==");
